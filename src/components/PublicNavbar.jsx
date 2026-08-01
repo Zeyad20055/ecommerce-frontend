@@ -1,30 +1,66 @@
-// components/PublicNavbar.jsx
-// Storefront navbar shown on Home / Products / Product Details pages.
+// components/ProductTable.jsx
 
-import { Link } from 'react-router-dom';
-import { FiShoppingBag } from 'react-icons/fi';
+import { Link } from "react-router-dom";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
-const PublicNavbar = () => {
+const API_URL = "https://ecommerce-backend-lilac-one.vercel.app";
+
+const ProductTable = ({ products, onDeleteRequest }) => {
+  if (!products || !products.length) {
+    return <div className="py-12 text-center text-gray-500 dark:text-gray-400">No products found.</div>;
+  }
+
   return (
-    <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/80 backdrop-blur dark:border-gray-800 dark:bg-gray-900/80">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
-          <FiShoppingBag className="text-primary-600" />
-          E-Shop
-        </Link>
-        <nav className="flex items-center gap-6 text-sm font-medium">
-          <Link to="/" className="hover:text-primary-600">Home</Link>
-          <Link to="/products" className="hover:text-primary-600">Products</Link>
-          <Link
-            to="/admin/login"
-            className="rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
-          >
-            Admin
-          </Link>
-        </nav>
-      </div>
-    </header>
+    <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="bg-gray-50 dark:bg-gray-800">
+          <tr>
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-500">Image</th>
+
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-500">Name</th>
+
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-500">Category</th>
+
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-500">Price</th>
+
+            <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-500">Qty</th>
+
+            <th className="px-4 py-3 text-right text-xs font-semibold uppercase text-gray-500">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
+          {products.map((product) => (
+            <tr key={product._id}>
+              <td className="px-4 py-3">
+                <img src={product.image ? `${API_URL}${product.image}` : "/placeholder.png"} alt={product.name} className="h-12 w-12 rounded-lg object-cover" />
+              </td>
+
+              <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{product.name}</td>
+
+              <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{product.category}</td>
+
+              <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">${Number(product.price).toFixed(2)}</td>
+
+              <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{product.quantity}</td>
+
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <Link to={`/admin/products/edit/${product._id}`} className="rounded-lg p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-gray-800">
+                    <FiEdit2 />
+                  </Link>
+
+                  <button onClick={() => onDeleteRequest(product)} className="rounded-lg p-2 text-red-600 hover:bg-red-50 dark:hover:bg-gray-800">
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
-export default PublicNavbar;
+export default ProductTable;
